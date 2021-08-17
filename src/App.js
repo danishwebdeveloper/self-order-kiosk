@@ -8,6 +8,7 @@ import { ThemeProvider, createTheme } from '@material-ui/core/styles';
 import { BrowserRouter, Route } from 'react-router-dom';
 import ChooseScreen from './screens/ChooseScreen';
 import HomeScreen from './screens/HomeScreen';
+import OrderScreen from './screens/OrderScreen';
 
 
 const theme = createTheme({
@@ -50,6 +51,10 @@ function App() {
         /> <
         Route component = { ChooseScreen }
         path = "/choose"
+        exact = { true }
+        /> <
+        Route component = { OrderScreen }
+        path = "/order"
         exact = { true }
         /> <
         /Paper> <
