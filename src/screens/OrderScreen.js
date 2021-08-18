@@ -14,7 +14,7 @@ export default function OrderScreen() {
 
     // For below dispatch with listCategories write useContext(store)
     const { state, dispatch } = useContext(Store);
-    // To get list of categories from the state 
+    // To get list of categories from the Store state
     const { categories, loading, error } = state.categoryList;
     useEffect(() => {
         listCategories(dispatch);
