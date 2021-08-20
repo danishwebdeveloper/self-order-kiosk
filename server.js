@@ -48,7 +48,8 @@ app.get('/api/products', async(req, res) => {
     const { category } = req.query;
     const products = await Product.find(category ? { category } : {});
     res.send(products);
-})
+});
+
 
 // Post request for new products and for post we use two middle ware above
 app.post('/api/products', async(req, res) => {
