@@ -1,16 +1,17 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { Avatar, Box, Card, CardActionArea, CardContent, CardMedia, CircularProgress, Grid, List, ListItem, Typography } from '@material-ui/core';
+import { Avatar, Box, Button, Card, CardActionArea, CardContent, CardMedia, CircularProgress, Dialog, DialogTitle, Grid, List, ListItem, TextField, Typography } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
+import AddIcon from '@material-ui/icons/Add';
+import RemoveIcon from '@material-ui/icons/Remove';
 import { useStyles } from '../styles';
-import { listCategories, listProducts } from '../actions';
+import { addToOrder, clearOrder, listCategories, listProducts, removeFromOrder } from '../actions';
 import { Store } from '../Store';
 import Logo from '../components/Logo';
 import { Fragment } from 'react';
 
 
 
-
-export default function OrderScreen() {
+export default function OrderScreen(props) {
     const styles = useStyles();
 
     // For below dispatch with listCategories write useContext(store)
@@ -21,6 +22,24 @@ export default function OrderScreen() {
 
     // For below categoryclickHnadler initialze above
     const [categoryName, setCategoryName] = useState();
+
+    const [quantity, setQuantity] = useState(1);
+    const [isOpen, setIsOpen] = useState(false);
+    const [product, setProduct] = useState({});
+
+    const closeHandler = () => {
+        setIsOpen(false);
+    };
+
+    const productClickHandler = (p) => {
+        setProduct(p);
+        setIsOpen(true);
+    };
+
+    const previewOrderHandler = () => {
+        props.history.push(`/review`);
+    };
+
     useEffect(() => {
         if (!categories) {
             listCategories(dispatch);
@@ -40,10 +59,94 @@ export default function OrderScreen() {
         listProducts(dispatch, categoryName);
     }
 
+    const addToOrderHandler = () => {
+        addToOrder(dispatch, {...product, quantity });
+        setIsOpen(false);
+    };
+    const cancelOrRemoveFromOrder = () => {
+        removeFromOrder(dispatch, product);
+        setIsOpen(false);
+    };
+
+    const {
+        orderItems,
+        itemsCount,
+        totalPrice,
+        taxPrice,
+        orderType
+    } = state.order;
+
 
     return ( <
         Box className = { styles.root } >
         <
+        Dialog maxWidth = "sm"
+        fullWidth = { true }
+        open = { isOpen }
+        onClose = { closeHandler } >
+        <
+        DialogTitle className = { styles.center } > Add { product.name } < /DialogTitle> <
+        Box className = {
+            [styles.row, styles.center] } >
+        <
+        Button variant = "contained"
+        color = "primary"
+        disabled = { quantity === 1 }
+        onClick = {
+            (e) => quantity > 1 && setQuantity(quantity - 1) } >
+        <
+        RemoveIcon / >
+        <
+        /Button> <
+        TextField inputProps = {
+            { className: styles.largeInput } }
+        InputProps = {
+            {
+                bar: true,
+                inputProps: {
+                    className: styles.largeInput,
+                },
+            }
+        }
+        className = { styles.largeNumber }
+        type = "number"
+        variant = "filled"
+        min = { 1 }
+        value = { quantity }
+        /> <
+        Button variant = "contained"
+        color = "primary"
+        onClick = {
+            (e) => setQuantity(quantity + 1) } >
+        <
+        AddIcon / >
+        <
+        /Button> <
+        /Box> <
+        Box className = {
+            [styles.row, styles.around] } >
+        <
+        Button onClick = { cancelOrRemoveFromOrder }
+        variant = "contained"
+        color = "primary"
+        size = "large"
+        className = { styles.largeButton } > {
+            /* {this.orderItems.find((x) => x.name === product.name)
+                          ? 'Remove From Order'
+                          : 'Cancel'}  */
+        } <
+        /Button>
+
+        <
+        Button onClick = { addToOrderHandler }
+        variant = "contained"
+        color = "primary"
+        size = "large"
+        className = { styles.largeButton } >
+        ADD To Order <
+        /Button> <
+        /Box> <
+        /Dialog>  <
         Box className = { styles.main } >
         <
         Grid container >
@@ -96,7 +199,9 @@ export default function OrderScreen() {
                 products.map((product) => ( <
                     Grid item md = { 6 } >
                     <
-                    Card className = { styles.card } >
+                    Card className = { styles.card }
+                    onClick = {
+                        () => productClickHandler(product) } >
                     <
                     CardActionArea >
                     <
@@ -136,6 +241,39 @@ export default function OrderScreen() {
         /Grid> <
         /Grid> <
         /Grid> <
+        /Box> <
+        Box >
+        <
+        Box >
+        <
+        Box className = {
+            [styles.bordered, styles.space] } >
+        My Order - { orderType } | Tax: $ { taxPrice } | Total: $ { totalPrice } |
+        Items: { itemsCount } <
+        /Box> <
+        Box className = {
+            [styles.row, styles.around] } >
+        <
+        Button onClick = {
+            () => {
+                clearOrder(dispatch);
+                props.history.push(`/`);
+            }
+        }
+        variant = "contained"
+        color = "primary"
+        className = { styles.largeButton } >
+        Cancel Order <
+        /Button> <
+        Button onClick = { previewOrderHandler }
+        variant = "contained"
+        color = "primary"
+        // disabled={orderItems.length === 0}
+        className = { styles.largeButton } >
+        Done <
+        /Button> <
+        /Box> <
+        /Box> <
         /Box> <
         /Box>
     );

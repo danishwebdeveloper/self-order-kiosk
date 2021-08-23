@@ -1,5 +1,5 @@
 import axios from "axios"
-import { CATEGORY_LIST_FAIL, CATEGORY_LIST_REQUEST, CATEGORY_LIST_SUCCESS, ORDER_SET_TYPE, PRODUCT_LIST_FAIL, PRODUCT_LIST_REQUEST, PRODUCT_LIST_SUCCESS } from "./constants"
+import { CATEGORY_LIST_FAIL, CATEGORY_LIST_REQUEST, CATEGORY_LIST_SUCCESS, ORDER_ADD_ITEM, ORDER_CLEAR, ORDER_REMOVE_ITEM, ORDER_SET_TYPE, PRODUCT_LIST_FAIL, PRODUCT_LIST_REQUEST, PRODUCT_LIST_SUCCESS } from "./constants"
 
 // Action and setOrderType and make 2 arguments one is dispatch and another one is what we want to update??
 export const setOrderType = (dispatch, orderType) => {
@@ -15,7 +15,7 @@ export const listCategories = async(dispatch) => {
         type: CATEGORY_LIST_REQUEST
     })
     try {
-        const { data } = await axios.get('/api/categories')
+        const { data } = await axios.get('/api/categories');
         return dispatch({
             type: CATEGORY_LIST_SUCCESS,
             payload: data,
@@ -46,3 +46,23 @@ export const listProducts = async(dispatch, categoryName = ' ') => {
         })
     }
 }
+
+export const addToOrder = async(dispatch, item) => {
+    return dispatch({
+        type: ORDER_ADD_ITEM,
+        payload: item,
+    });
+};
+
+export const removeFromOrder = async(dispatch, item) => {
+    return dispatch({
+        type: ORDER_REMOVE_ITEM,
+        payload: item,
+    });
+};
+
+export const clearOrder = async(dispatch) => {
+    return dispatch({
+        type: ORDER_CLEAR,
+    });
+};
